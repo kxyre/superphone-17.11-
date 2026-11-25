@@ -4,6 +4,8 @@ require "../../autoload.php";
 
 $dao = new VendaDAO();
 $lista = $dao->read();
+
+$produtoDao = new produtoDAO();
 ?>
 
 <!doctype html>
@@ -232,8 +234,9 @@ $lista = $dao->read();
                             <th>ID</th>
                             <th>Data</th>
                             <th>Valor Total</th>
-                            <th>Forma de  Pagamento</th>
+                            <th>Forma de Pagamento</th>
                             <th>Nome</th>
+                            <th>Produtos</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -248,7 +251,7 @@ $lista = $dao->read();
                                 </td>
 
                                 <td>
-                                     <?= date('d/m/Y', strtotime($venda->getData())); ?>
+                                    <?= date('d/m/Y', strtotime($venda->getData())); ?>
                                 </td>
 
                                 <td>
@@ -259,8 +262,22 @@ $lista = $dao->read();
                                     <?= htmlspecialchars($venda->getFormaPagamento()->getDescricao()); ?>
                                 </td>
 
-                                  <td>
+                                <td>
                                     <?= htmlspecialchars($venda->getComprador()->getNome()); ?>
+                                </td>
+
+                                <td>
+                                    <?php
+                                    $produtos = $dao->getProdutosIds($venda->getId());
+
+                                    foreach ($produtos as $idProduto) {
+                                        $produto = $produtoDao->find($idProduto);
+
+                                        if ($produto) {
+                                            echo $produto->getDescricao() . ", ";
+                                        }
+                                    }
+                                    ?>
                                 </td>
 
                                 <td>
@@ -275,7 +292,7 @@ $lista = $dao->read();
                                         <a href="destroy.php?id=<?= $venda->getId(); ?>"
                                            class="btn-acao btn-excluir"
                                            title="Excluir"
-                                           onclick="return confirm('Deseja realmente excluir este venda?');">
+                                           onclick="return confirm('Deseja realmente excluir esta venda?');">
                                             <i class="bi bi-trash"></i>
                                         </a>
 
