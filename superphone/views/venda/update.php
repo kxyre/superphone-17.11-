@@ -1,5 +1,11 @@
+
 <?php
 require "../../autoload.php";
+
+if (empty($_POST['produtos']) || !is_array($_POST['produtos'])) {
+    echo "<script>alert('Selecione pelo menos um produto!'); history.back();</script>";
+    exit;
+}
 
 $venda = new Venda();
 
@@ -17,8 +23,9 @@ $comprador->setId($_POST['idPessoa']);
 
 $venda->setComprador($comprador);
 
-$dao = new vendaDAO();
-$dao->update($venda);
+$dao = new VendaDAO();
+
+$dao->update($venda, $_POST['produtos']);
 
 header('Location: index.php');
 exit;
