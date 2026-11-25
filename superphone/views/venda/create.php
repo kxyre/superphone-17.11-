@@ -1,10 +1,15 @@
+
 <?php
 require "../../autoload.php";
 
 $tipoDao = new formaPagamentoDAO();
 $tipos = $tipoDao->read();
+
 $compradorDao = new CompradorDAO();
 $compradores = $compradorDao->read();
+
+$produtoDao = new produtoDAO();
+$produtos = $produtoDao->read();
 ?>
 
 <!doctype html>
@@ -81,6 +86,28 @@ $compradores = $compradorDao->read();
             padding: 10px;
         }
 
+        .lista-produtos {
+            border: 1px solid #f3c5da;
+            border-radius: 10px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .produto-item {
+            padding: 10px;
+            border-bottom: 1px solid #f8e1eb;
+        }
+
+        .produto-item:last-child {
+            border-bottom: none;
+        }
+
+        .form-check-input:checked {
+            background-color: #e85d9e;
+            border-color: #e85d9e;
+        }
+
         .btn-rosa {
             background: #e85d9e;
             color: white;
@@ -131,7 +158,6 @@ $compradores = $compradorDao->read();
 
             <form action="insert.php" method="post">
 
-
                 <div class="mb-3">
                     <label class="form-label">Data</label>
                     <input type="date" name="data" class="form-control" required>
@@ -139,13 +165,15 @@ $compradores = $compradorDao->read();
 
                 <div class="mb-3">
                     <label class="form-label">Valor Total</label>
-                    <input type="number" name="valorTotal" class="form-control" step="0.01" min="0" required>
+                    <input type="number" name="valorTotal" class="form-control"
+                           step="0.01" min="0" required>
                 </div>
 
                 <div class="mb-4">
                     <label class="form-label">Forma de pagamento</label>
+
                     <select name="formaPagamento" class="form-select" required>
-                        <option value="">Selecione um tipo</option>
+                        <option value="">Selecione uma forma de pagamento</option>
 
                         <?php foreach ($tipos as $tipo) { ?>
                             <option value="<?= $tipo->getId() ?>">
@@ -158,8 +186,9 @@ $compradores = $compradorDao->read();
 
                 <div class="mb-4">
                     <label class="form-label">Cliente</label>
+
                     <select name="idPessoa" class="form-select" required>
-                        <option value="">Selecione um Comprador</option>
+                        <option value="">Selecione um comprador</option>
 
                         <?php foreach ($compradores as $comprador) { ?>
                             <option value="<?= $comprador->getId() ?>">
@@ -168,6 +197,63 @@ $compradores = $compradorDao->read();
                         <?php } ?>
 
                     </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">
+                        <i class="bi bi-box-seam"></i> Selecione os produtos
+                    </label>
+
+                    <p class="text-muted small">
+                        Você pode selecionar mais de um produto para esta venda.
+                    </p>
+
+                    <div class="lista-produtos">
+
+                        <?php foreach ($produtos as $produto) { ?>
+
+                            <div class="produto-item">
+                                <div class="form-check">
+
+                                    <input
+                                        class="form-check-input"
+                                        type="checkbox"
+                                        name="produtos[]"
+                                        value="<?= $produto->getId() ?>"
+                                        id="produto<?= $produto->getId() ?>"
+                                    >
+
+                                    <label class="form-check-label"
+                                           for="produto<?= $produto->getId() ?>">
+
+                                        <strong>
+                                            <?= htmlspecialchars($produto->getDescricao()) ?>
+                                        </strong>
+
+                                        <br>
+
+                                        <small class="text-muted">
+                                            <?= htmlspecialchars($produto->getMarca()) ?>
+                                            -
+                                            <?= htmlspecialchars($produto->getModelo()) ?>
+                                            | R$
+                                            <?= number_format($produto->getPreco(), 2, ',', '.') ?>
+                                        </small>
+
+                                    </label>
+
+                                </div>
+                            </div>
+
+                        <?php } ?>
+
+                        <?php if (empty($produtos)) { ?>
+                            <p class="text-muted text-center mb-0">
+                                Nenhum produto cadastrado.
+                            </p>
+                        <?php } ?>
+
+                    </div>
                 </div>
 
                 <a href="index.php" class="btn btn-secondary">
