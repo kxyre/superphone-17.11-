@@ -86,23 +86,6 @@ $produtos = $produtoDao->read();
             padding: 10px;
         }
 
-        .lista-produtos {
-            border: 1px solid #f3c5da;
-            border-radius: 10px;
-            padding: 15px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .produto-item {
-            padding: 10px;
-            border-bottom: 1px solid #f8e1eb;
-        }
-
-        .produto-item:last-child {
-            border-bottom: none;
-        }
-
         .form-check-input:checked {
             background-color: #e85d9e;
             border-color: #e85d9e;
@@ -166,7 +149,7 @@ $produtos = $produtoDao->read();
                 <div class="mb-3">
                     <label class="form-label">Valor Total</label>
                     <input type="number" name="valorTotal" class="form-control"
-                           step="0.01" min="0" required>
+                        step="0.01" min="0" required>
                 </div>
 
                 <div class="mb-4">
@@ -177,7 +160,7 @@ $produtos = $produtoDao->read();
 
                         <?php foreach ($tipos as $tipo) { ?>
                             <option value="<?= $tipo->getId() ?>">
-                                <?= htmlspecialchars($tipo->getDescricao()) ?>
+                                <?= $tipo->getDescricao() ?>
                             </option>
                         <?php } ?>
 
@@ -186,74 +169,33 @@ $produtos = $produtoDao->read();
 
                 <div class="mb-4">
                     <label class="form-label">Cliente</label>
-
                     <select name="idPessoa" class="form-select" required>
                         <option value="">Selecione um comprador</option>
-
                         <?php foreach ($compradores as $comprador) { ?>
                             <option value="<?= $comprador->getId() ?>">
-                                <?= htmlspecialchars($comprador->getNome()) ?>
+                                <?= $comprador->getNome() ?>
                             </option>
                         <?php } ?>
-
                     </select>
                 </div>
 
-                <div class="mb-4">
-                    <label class="form-label">
-                        <i class="bi bi-box-seam"></i> Selecione os produtos
-                    </label>
+                <div class="mb-3">
+                    <label class="form-label">Produtos</label>
+                    <?php foreach ($produtos as $produto) { ?>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input"
+                                name="produtos[]"
+                                value="<?= $produto->getId() ?>">
+                            <label class="form-check-label">
+                                <?= $produto->getDescricao() ?> -R$ <?= number_format($produto->getPreco(), 2, ',', '.') ?>
+                            </label>
+                        </div>
+                    <?php } ?>
 
-                    <p class="text-muted small">
-                        Você pode selecionar mais de um produto para esta venda.
-                    </p>
+                    <?php if (empty($produtos)) { ?>
+                        <p class="text-muted">Nenhum produto cadastrado.</p>
+                    <?php } ?>
 
-                    <div class="lista-produtos">
-
-                        <?php foreach ($produtos as $produto) { ?>
-
-                            <div class="produto-item">
-                                <div class="form-check">
-
-                                    <input
-                                        class="form-check-input"
-                                        type="checkbox"
-                                        name="produtos[]"
-                                        value="<?= $produto->getId() ?>"
-                                        id="produto<?= $produto->getId() ?>"
-                                    >
-
-                                    <label class="form-check-label"
-                                           for="produto<?= $produto->getId() ?>">
-
-                                        <strong>
-                                            <?= htmlspecialchars($produto->getDescricao()) ?>
-                                        </strong>
-
-                                        <br>
-
-                                        <small class="text-muted">
-                                            <?= htmlspecialchars($produto->getMarca()) ?>
-                                            -
-                                            <?= htmlspecialchars($produto->getModelo()) ?>
-                                            | R$
-                                            <?= number_format($produto->getPreco(), 2, ',', '.') ?>
-                                        </small>
-
-                                    </label>
-
-                                </div>
-                            </div>
-
-                        <?php } ?>
-
-                        <?php if (empty($produtos)) { ?>
-                            <p class="text-muted text-center mb-0">
-                                Nenhum produto cadastrado.
-                            </p>
-                        <?php } ?>
-
-                    </div>
                 </div>
 
                 <a href="index.php" class="btn btn-secondary">
